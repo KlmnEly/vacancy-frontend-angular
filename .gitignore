@@ -1,0 +1,61 @@
+# =========================
+# Angular / Node
+# =========================
+node_modules/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Angular cache
+.angular/cache
+
+# Environment files
+src/environments/environment*.ts
+
+# IDEs y editores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# =========================
+# Docker
+# =========================
+
+# Archivos de docker override (opcionales)
+docker-compose.override.yml
+
+# Archivos temporales de docker
+*.log
+
+# Variables de entorno sensibles
+.env
+.env.*
+
+# =========================
+# Build y producción
+# =========================
+build/
+coverage/
+
+# =========================
+# Otros
+# =========================
+*.local
+*.lock
+
+# Archivos generados
+*.tgz
