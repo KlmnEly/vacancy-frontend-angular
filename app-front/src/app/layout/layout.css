@@ -1,0 +1,152 @@
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Estilos del Header */
+.top-header {
+  height: 60px;
+  background-color: #1f3d5a;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.top-header .btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 68, 68, 0.1); /* Fondo rojo muy transparente */
+  color: #ff4444; /* Texto rojo */
+  border: 1px solid rgba(255, 68, 68, 0.2);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.logout-btn:hover {
+  background-color: #ff4444; /* Se vuelve rojo sólido */
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+.logout-icon {
+  transition: transform 0.2s ease;
+}
+
+.logout-btn:hover .logout-icon {
+  transform: translateX(3px); /* Pequeña animación de la flecha al hacer hover */
+}
+
+/* El cuerpo: Sidebar a la izquierda, Contenido a la derecha */
+.main-container {
+  display: flex;
+  flex: 1; /* Toma el resto del alto de la pantalla */
+  overflow: hidden;
+}
+
+/* --- ANIMACIÓN DEL SIDEBAR --- */
+.sidebar {
+  width: 250px;
+  background-color: #152b41; 
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.closed {
+  width: 70px; /* Suficiente para el icono centrado */
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  padding: 15px;
+  cursor: pointer;
+  text-align: right;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.sidebar .icon{
+    color: #f5edd7;
+}
+
+.sidebar .toggle-btn {
+    color: #f5edd7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-color: #484872;
+    }
+}
+
+.sidebar.closed .toggle-btn {
+  text-align: center; /* Centra la flecha cuando está cerrado */
+}
+
+/* Enlaces del menú */
+.nav-links a {
+  display: flex;
+  align-items: center;
+  padding: 15px 22px;
+  color: #f5edd7;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.nav-links a:hover {
+  background-color: #484872;
+  color: #ffffff;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  min-width: 24px; /* Evita que se encoja al cerrar el sidebar */
+  stroke-width: 2;
+  margin-right: 15px; /* Separación inicial con el texto */
+}
+
+/* Cuando el sidebar está CERRADO, quitamos el margen del icono para centrarlo */
+.sidebar.closed .icon {
+  margin-right: 0;
+}
+
+.sidebar.closed .nav-links a {
+  justify-content: center; /* Centra el icono en el espacio reducido */
+  padding: 15px 0;
+}
+
+/* El TEXTO (con una pequeña animación de aparición) */
+.link-text {
+  font-size: 15px;
+  white-space: nowrap;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Área donde carga el Dashboard / Historial */
+.content-area {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto; /* Scroll solo en el contenido si hay mucho texto */
+  background-color: #fff;
+}

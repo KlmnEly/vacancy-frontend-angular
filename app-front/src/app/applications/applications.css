@@ -1,0 +1,69 @@
+.app-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.company {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.meta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.card-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #f5f5f5;
+  font-size: 0.75rem;
+  color: #bbb;
+}
+
+.status-sent {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.tag-modality { 
+  background-color: #e1f0ff; 
+  color: #007bff; 
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.status-pending {
+  background-color: #facc15; /* amarillo */
+  color: #000;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.status-pending::after,
+.status-accepted::after,
+.status-rejected::after {
+  content: '';
+  margin-left: 5px;
+}
+
+.status-accepted {
+  background-color: #22c55e; /* verde */
+  color: white;
+}
+
+.status-rejected {
+  background-color: #ef4444; /* rojo */
+  color: white;
+}

@@ -1,5 +1,5 @@
-import { createRequire } from 'module';const require = createRequire(import.meta.url);
 import {
+  ApplicationRef,
   Attribute,
   ChangeDetectorRef,
   DEFAULT_CURRENCY_CODE,
@@ -28,6 +28,7 @@ import {
   Renderer2,
   RendererStyleFlags2,
   RuntimeError,
+  Subject,
   TemplateRef,
   Version,
   ViewContainerRef,
@@ -35,13 +36,14 @@ import {
   createNgModule,
   findLocaleData,
   formatRuntimeError,
+  getLocaleCurrencyCode,
   getLocalePluralCase,
   inject,
   isPromise,
   isSubscribable,
   numberAttribute,
   performanceMarkFeature,
-  require_cjs,
+  registerLocaleData,
   setClassMetadata,
   stringify,
   untracked,
@@ -56,15 +58,14 @@ import {
   ɵɵinject,
   ɵɵinjectAttribute,
   ɵɵstyleProp
-} from "./chunk-UHS4WQHW.js";
+} from "./chunk-R56QCDFD.js";
 import {
+  __async,
   __spreadProps,
-  __spreadValues,
-  __toESM
-} from "./chunk-YHCV7DAQ.js";
+  __spreadValues
+} from "./chunk-PDGGWWRA.js";
 
 // node_modules/@angular/common/fesm2022/location.mjs
-var import_rxjs = __toESM(require_cjs(), 1);
 var _DOM = null;
 function getDOM() {
   return _DOM;
@@ -295,7 +296,7 @@ var PathLocationStrategy = class _PathLocationStrategy extends LocationStrategy 
 })();
 var Location = class _Location {
   /** @internal */
-  _subject = new import_rxjs.Subject();
+  _subject = new Subject();
   /** @internal */
   _basePath;
   /** @internal */
@@ -913,6 +914,14 @@ function getLocaleEraNames(locale, width) {
   const erasData = data[LocaleDataIndex.Eras];
   return getLastDefinedValue(erasData, width);
 }
+function getLocaleFirstDayOfWeek(locale) {
+  const data = findLocaleData(locale);
+  return data[LocaleDataIndex.FirstDayOfWeek];
+}
+function getLocaleWeekEndRange(locale) {
+  const data = findLocaleData(locale);
+  return data[LocaleDataIndex.WeekendRange];
+}
 function getLocaleDateFormat(locale, width) {
   const data = findLocaleData(locale);
   return getLastDefinedValue(data[LocaleDataIndex.DateFormat], width);
@@ -941,6 +950,17 @@ function getLocaleNumberSymbol(locale, symbol) {
 function getLocaleNumberFormat(locale, type) {
   const data = findLocaleData(locale);
   return data[LocaleDataIndex.NumberFormats][type];
+}
+function getLocaleCurrencySymbol(locale) {
+  const data = findLocaleData(locale);
+  return data[LocaleDataIndex.CurrencySymbol] || null;
+}
+function getLocaleCurrencyName(locale) {
+  const data = findLocaleData(locale);
+  return data[LocaleDataIndex.CurrencyName] || null;
+}
+function getLocaleCurrencyCode2(locale) {
+  return getLocaleCurrencyCode(locale);
 }
 function getLocaleCurrencies(locale) {
   const data = findLocaleData(locale);
@@ -978,6 +998,10 @@ function getLocaleExtraDayPeriods(locale, formStyle, width) {
   ]];
   const dayPeriods = getLastDefinedValue(dayPeriodsData, formStyle) || [];
   return getLastDefinedValue(dayPeriods, width) || [];
+}
+function getLocaleDirection(locale) {
+  const data = findLocaleData(locale);
+  return data[LocaleDataIndex.Directionality];
 }
 function getLastDefinedValue(data, index) {
   for (let i = index; i > -1; i--) {
@@ -3679,9 +3703,17 @@ var PlatformNavigation = class _PlatformNavigation {
 })();
 
 // node_modules/@angular/common/fesm2022/common.mjs
-var import_rxjs2 = __toESM(require_cjs(), 1);
+function registerLocaleData2(data, localeId, extraData) {
+  return registerLocaleData(data, localeId, extraData);
+}
 var PLATFORM_BROWSER_ID = "browser";
 var PLATFORM_SERVER_ID = "server";
+function isPlatformBrowser(platformId) {
+  return platformId === PLATFORM_BROWSER_ID;
+}
+function isPlatformServer(platformId) {
+  return platformId === PLATFORM_SERVER_ID;
+}
 var VERSION = new Version("20.3.18");
 var ViewportScroller = class _ViewportScroller {
   // De-sugared tree-shakable injection
@@ -3692,10 +3724,114 @@ var ViewportScroller = class _ViewportScroller {
     ɵɵdefineInjectable({
       token: _ViewportScroller,
       providedIn: "root",
-      factory: () => true ? new NullViewportScroller() : new BrowserViewportScroller(inject(DOCUMENT), window)
+      factory: () => false ? new NullViewportScroller() : new BrowserViewportScroller(inject(DOCUMENT), window)
     })
   );
 };
+var BrowserViewportScroller = class {
+  document;
+  window;
+  offset = () => [0, 0];
+  constructor(document, window2) {
+    this.document = document;
+    this.window = window2;
+  }
+  /**
+   * Configures the top offset used when scrolling to an anchor.
+   * @param offset A position in screen coordinates (a tuple with x and y values)
+   * or a function that returns the top offset position.
+   *
+   */
+  setOffset(offset) {
+    if (Array.isArray(offset)) {
+      this.offset = () => offset;
+    } else {
+      this.offset = offset;
+    }
+  }
+  /**
+   * Retrieves the current scroll position.
+   * @returns The position in screen coordinates.
+   */
+  getScrollPosition() {
+    return [this.window.scrollX, this.window.scrollY];
+  }
+  /**
+   * Sets the scroll position.
+   * @param position The new position in screen coordinates.
+   */
+  scrollToPosition(position, options) {
+    this.window.scrollTo(__spreadProps(__spreadValues({}, options), {
+      left: position[0],
+      top: position[1]
+    }));
+  }
+  /**
+   * Scrolls to an element and attempts to focus the element.
+   *
+   * Note that the function name here is misleading in that the target string may be an ID for a
+   * non-anchor element.
+   *
+   * @param target The ID of an element or name of the anchor.
+   *
+   * @see https://html.spec.whatwg.org/#the-indicated-part-of-the-document
+   * @see https://html.spec.whatwg.org/#scroll-to-fragid
+   */
+  scrollToAnchor(target, options) {
+    const elSelected = findAnchorFromDocument(this.document, target);
+    if (elSelected) {
+      this.scrollToElement(elSelected, options);
+      elSelected.focus();
+    }
+  }
+  /**
+   * Disables automatic scroll restoration provided by the browser.
+   */
+  setHistoryScrollRestoration(scrollRestoration) {
+    try {
+      this.window.history.scrollRestoration = scrollRestoration;
+    } catch {
+      console.warn(formatRuntimeError(2400, ngDevMode && "Failed to set `window.history.scrollRestoration`. This may occur when:\n• The script is running inside a sandboxed iframe\n• The window is partially navigated or inactive\n• The script is executed in an untrusted or special context (e.g., test runners, browser extensions, or content previews)\nScroll position may not be preserved across navigation."));
+    }
+  }
+  /**
+   * Scrolls to an element using the native offset and the specified offset set on this scroller.
+   *
+   * The offset can be used when we know that there is a floating header and scrolling naively to an
+   * element (ex: `scrollIntoView`) leaves the element hidden behind the floating header.
+   */
+  scrollToElement(el, options) {
+    const rect = el.getBoundingClientRect();
+    const left = rect.left + this.window.pageXOffset;
+    const top = rect.top + this.window.pageYOffset;
+    const offset = this.offset();
+    this.window.scrollTo(__spreadProps(__spreadValues({}, options), {
+      left: left - offset[0],
+      top: top - offset[1]
+    }));
+  }
+};
+function findAnchorFromDocument(document, target) {
+  const documentResult = document.getElementById(target) || document.getElementsByName(target)[0];
+  if (documentResult) {
+    return documentResult;
+  }
+  if (typeof document.createTreeWalker === "function" && document.body && typeof document.body.attachShadow === "function") {
+    const treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+    let currentNode = treeWalker.currentNode;
+    while (currentNode) {
+      const shadowRoot = currentNode.shadowRoot;
+      if (shadowRoot) {
+        const result = shadowRoot.getElementById(target) || shadowRoot.querySelector(`[name="${target}"]`);
+        if (result) {
+          return result;
+        }
+      }
+      currentNode = treeWalker.nextNode();
+    }
+  }
+  return null;
+}
 var NullViewportScroller = class {
   /**
    * Empty implementation
@@ -3868,6 +4004,49 @@ var NETLIFY_LOADER_REGEX = /https?\:\/\/[^\/]+\.netlify\.app\/.+/;
 function isNetlifyUrl(url) {
   return NETLIFY_LOADER_REGEX.test(url);
 }
+function provideNetlifyLoader(path) {
+  if (path && !isValidPath(path)) {
+    throw new RuntimeError(2959, ngDevMode && `Image loader has detected an invalid path (\`${path}\`). To fix this, supply either the full URL to the Netlify site, or leave it empty to use the current site.`);
+  }
+  if (path) {
+    const url = new URL(path);
+    path = url.origin;
+  }
+  const loaderFn = (config) => {
+    return createNetlifyUrl(config, path);
+  };
+  const providers = [{
+    provide: IMAGE_LOADER,
+    useValue: loaderFn
+  }];
+  return providers;
+}
+var validParams = /* @__PURE__ */ new Map([["height", "h"], ["fit", "fit"], ["quality", "q"], ["q", "q"], ["position", "position"]]);
+function createNetlifyUrl(config, path) {
+  const url = new URL(path ?? "https://a/");
+  url.pathname = "/.netlify/images";
+  if (!isAbsoluteUrl(config.src) && !config.src.startsWith("/")) {
+    config.src = "/" + config.src;
+  }
+  url.searchParams.set("url", config.src);
+  if (config.width) {
+    url.searchParams.set("w", config.width.toString());
+  }
+  const configQuality = config.loaderParams?.["quality"] ?? config.loaderParams?.["q"];
+  if (config.isPlaceholder && !configQuality) {
+    url.searchParams.set("q", PLACEHOLDER_QUALITY);
+  }
+  for (const [param, value] of Object.entries(config.loaderParams ?? {})) {
+    if (validParams.has(param)) {
+      url.searchParams.set(validParams.get(param), value.toString());
+    } else {
+      if (ngDevMode) {
+        console.warn(formatRuntimeError(2959, `The Netlify image loader has detected an \`<img>\` tag with the unsupported attribute "\`${param}\`".`));
+      }
+    }
+  }
+  return url.hostname === "a" ? url.href.replace(url.origin, "") : url.href;
+}
 function imgDirectiveDetails(ngSrc, includeNgSrc = true) {
   const ngSrcInfo = includeNgSrc ? `(activated on an <img> element with the \`ngSrc="${ngSrc}"\`) ` : "";
   return `The NgOptimizedImage directive ${ngSrcInfo}has detected that`;
@@ -3884,7 +4063,7 @@ var LCPImageObserver = class _LCPImageObserver {
   observer = null;
   constructor() {
     assertDevMode("LCP checker");
-    if (false) {
+    if (typeof PerformanceObserver !== "undefined") {
       this.observer = this.initPerformanceObserver();
     }
   }
@@ -4011,7 +4190,7 @@ var PreconnectLinkChecker = class _PreconnectLinkChecker {
    * @param originalNgSrc ngSrc value
    */
   assertPreconnect(rewrittenSrc, originalNgSrc) {
-    if (true) return;
+    if (false) return;
     const imgUrl = getUrl(rewrittenSrc, this.window);
     if (this.blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
     this.alreadySeen.add(imgUrl.origin);
@@ -4131,9 +4310,12 @@ var ASPECT_RATIO_TOLERANCE = 0.1;
 var OVERSIZED_IMAGE_TOLERANCE = 1e3;
 var FIXED_SRCSET_WIDTH_LIMIT = 1920;
 var FIXED_SRCSET_HEIGHT_LIMIT = 1080;
+var PLACEHOLDER_DIMENSION_LIMIT = 1e3;
 var DATA_URL_WARN_LIMIT = 4e3;
 var DATA_URL_ERROR_LIMIT = 1e4;
 var BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo, netlifyLoaderInfo];
+var PRIORITY_COUNT_THRESHOLD = 10;
+var IMGS_WITH_PRIORITY_ATTR_COUNT = 0;
 var NgOptimizedImage = class _NgOptimizedImage {
   imageLoader = inject(IMAGE_LOADER);
   config = processConfig(inject(IMAGE_CONFIG));
@@ -4295,7 +4477,7 @@ var NgOptimizedImage = class _NgOptimizedImage {
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
-        if (false) {
+        if (true) {
           const applicationRef = this.injector.get(ApplicationRef);
           assetPriorityCountBelowThreshold(applicationRef);
         }
@@ -4329,7 +4511,7 @@ var NgOptimizedImage = class _NgOptimizedImage {
         this.setHostAttribute("sizes", "auto, 100vw");
       }
     }
-    if (this.priority) {
+    if (false) {
       const preloadLinkCreator = this.injector.get(PreloadLinkCreator);
       preloadLinkCreator.createPreloadLinkTag(this.renderer, this.getRewrittenSrc(), rewrittenSrcset, this.sizes);
     }
@@ -4352,7 +4534,7 @@ var NgOptimizedImage = class _NgOptimizedImage {
         }
       }
     }
-    if (ngDevMode && changes["placeholder"]?.currentValue && true && false) {
+    if (ngDevMode && changes["placeholder"]?.currentValue && true && true) {
       assertPlaceholderDimensions(this, this.imgElement);
     }
   }
@@ -4871,6 +5053,27 @@ function assertNoLoaderParamsWithoutLoader(dir, imageLoader) {
     console.warn(formatRuntimeError(2963, `${imgDirectiveDetails(dir.ngSrc)} the \`loaderParams\` attribute is present but no image loader is configured (i.e. the default one is being used), which means that the loaderParams data will not be consumed and will not affect the URL. To fix this, provide a custom loader or remove the \`loaderParams\` attribute from the image.`));
   }
 }
+function assetPriorityCountBelowThreshold(appRef) {
+  return __async(this, null, function* () {
+    if (IMGS_WITH_PRIORITY_ATTR_COUNT === 0) {
+      IMGS_WITH_PRIORITY_ATTR_COUNT++;
+      yield appRef.whenStable();
+      if (IMGS_WITH_PRIORITY_ATTR_COUNT > PRIORITY_COUNT_THRESHOLD) {
+        console.warn(formatRuntimeError(2966, `NgOptimizedImage: The "priority" attribute is set to true more than ${PRIORITY_COUNT_THRESHOLD} times (${IMGS_WITH_PRIORITY_ATTR_COUNT} times). Marking too many images as "high" priority can hurt your application's LCP (https://web.dev/lcp). "Priority" should only be set on the image expected to be the page's LCP element.`));
+      }
+    } else {
+      IMGS_WITH_PRIORITY_ATTR_COUNT++;
+    }
+  });
+}
+function assertPlaceholderDimensions(dir, imgElement) {
+  const computedStyle = window.getComputedStyle(imgElement);
+  let renderedWidth = parseFloat(computedStyle.getPropertyValue("width"));
+  let renderedHeight = parseFloat(computedStyle.getPropertyValue("height"));
+  if (renderedWidth > PLACEHOLDER_DIMENSION_LIMIT || renderedHeight > PLACEHOLDER_DIMENSION_LIMIT) {
+    console.warn(formatRuntimeError(2967, `${imgDirectiveDetails(dir.ngSrc)} it uses a placeholder image, but at least one of the dimensions attribute (height or width) exceeds the limit of ${PLACEHOLDER_DIMENSION_LIMIT}px. To fix this, use a smaller image as a placeholder.`));
+  }
+}
 function callOnLoadIfImageIsLoaded(img, callback) {
   if (img.complete && img.naturalWidth) {
     callback();
@@ -4898,16 +5101,93 @@ export {
   DomAdapter,
   PlatformLocation,
   LOCATION_INITIALIZED,
+  BrowserPlatformLocation,
+  normalizeQueryParams,
   LocationStrategy,
   APP_BASE_HREF,
   PathLocationStrategy,
   Location,
   HashLocationStrategy,
+  NumberFormatStyle,
+  Plural,
+  FormStyle,
+  TranslationWidth,
+  FormatWidth,
+  NumberSymbol,
+  WeekDay,
+  getLocaleId,
+  getLocaleDayPeriods,
+  getLocaleDayNames,
+  getLocaleMonthNames,
+  getLocaleEraNames,
+  getLocaleFirstDayOfWeek,
+  getLocaleWeekEndRange,
+  getLocaleDateFormat,
+  getLocaleTimeFormat,
+  getLocaleDateTimeFormat,
+  getLocaleNumberSymbol,
+  getLocaleNumberFormat,
+  getLocaleCurrencySymbol,
+  getLocaleCurrencyName,
+  getLocaleCurrencyCode2 as getLocaleCurrencyCode,
+  getLocalePluralCase2 as getLocalePluralCase,
+  getLocaleExtraDayPeriodRules,
+  getLocaleExtraDayPeriods,
+  getLocaleDirection,
+  getCurrencySymbol,
+  getNumberOfCurrencyDigits,
+  formatDate,
+  formatCurrency,
+  formatPercent,
+  formatNumber,
+  NgLocalization,
+  NgLocaleLocalization,
+  NgClass,
+  NgComponentOutlet,
+  NgForOfContext,
+  NgForOf,
+  NgIf,
+  NgIfContext,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+  NgPlural,
+  NgPluralCase,
+  NgStyle,
+  NgTemplateOutlet,
+  AsyncPipe,
+  LowerCasePipe,
+  TitleCasePipe,
+  UpperCasePipe,
+  DATE_PIPE_DEFAULT_TIMEZONE,
+  DATE_PIPE_DEFAULT_OPTIONS,
+  DatePipe,
+  I18nPluralPipe,
+  I18nSelectPipe,
+  JsonPipe,
+  KeyValuePipe,
+  DecimalPipe,
+  PercentPipe,
+  CurrencyPipe,
+  SlicePipe,
   CommonModule,
+  PlatformNavigation,
+  registerLocaleData2 as registerLocaleData,
   PLATFORM_BROWSER_ID,
   PLATFORM_SERVER_ID,
+  isPlatformBrowser,
+  isPlatformServer,
+  VERSION,
   ViewportScroller,
-  NullViewportScroller
+  NullViewportScroller,
+  IMAGE_LOADER,
+  provideCloudflareLoader,
+  provideCloudinaryLoader,
+  provideImageKitLoader,
+  provideImgixLoader,
+  provideNetlifyLoader,
+  PRECONNECT_CHECK_BLOCKLIST,
+  NgOptimizedImage
 };
 /*! Bundled license information:
 
@@ -4921,4 +5201,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-4NI4MCN3.js.map
+//# sourceMappingURL=chunk-DHI25ZNO.js.map

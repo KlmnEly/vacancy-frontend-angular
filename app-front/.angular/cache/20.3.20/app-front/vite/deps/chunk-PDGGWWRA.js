@@ -1,9 +1,14 @@
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
 var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __knownSymbol = (name, symbol) => (symbol = Symbol[name]) ? symbol : Symbol.for("Symbol." + name);
+var __typeError = (msg) => {
+  throw TypeError(msg);
+};
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues = (a, b) => {
   for (var prop in b ||= {})
@@ -17,6 +22,12 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
+}) : x)(function(x) {
+  if (typeof require !== "undefined") return require.apply(this, arguments);
+  throw Error('Dynamic require of "' + x + '" is not supported');
+});
 var __objRest = (source, exclude) => {
   var target = {};
   for (var prop in source)
@@ -28,6 +39,9 @@ var __objRest = (source, exclude) => {
         target[prop] = source[prop];
     }
   return target;
+};
+var __commonJS = (cb, mod) => function __require2() {
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
@@ -49,10 +63,45 @@ var __async = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
+var __await = function(promise, isYieldStar) {
+  this[0] = promise;
+  this[1] = isYieldStar;
+};
+var __yieldStar = (value) => {
+  var obj = value[__knownSymbol("asyncIterator")], isAwait = false, method, it = {};
+  if (obj == null) {
+    obj = value[__knownSymbol("iterator")]();
+    method = (k) => it[k] = (x) => obj[k](x);
+  } else {
+    obj = obj.call(value);
+    method = (k) => it[k] = (v) => {
+      if (isAwait) {
+        isAwait = false;
+        if (k === "throw") throw v;
+        return v;
+      }
+      isAwait = true;
+      return {
+        done: false,
+        value: new __await(new Promise((resolve) => {
+          var x = obj[k](v);
+          if (!(x instanceof Object)) __typeError("Object expected");
+          resolve(x);
+        }), 1)
+      };
+    };
+  }
+  return it[__knownSymbol("iterator")] = () => it, method("next"), "throw" in obj ? method("throw") : it.throw = (x) => {
+    throw x;
+  }, "return" in obj && method("return"), it;
+};
 
 export {
   __spreadValues,
   __spreadProps,
+  __require,
   __objRest,
-  __async
+  __commonJS,
+  __async,
+  __yieldStar
 };

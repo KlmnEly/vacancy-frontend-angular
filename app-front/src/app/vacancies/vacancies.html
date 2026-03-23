@@ -1,0 +1,95 @@
+<div class="vacancies-container">
+  <div class="header-section">
+    <h2>Ofertas de Empleo Disponibles</h2>
+    <p>Encuentra tu próximo reto profesional.</p>
+  </div>
+
+  @if (isLoading()) {
+  <div class="loading">Cargando vacantes...</div>
+  } @else {
+
+  <div class="vacancies-grid">
+    @for (job of paginatedVacancies(); track job.idVacancy) {
+    <div class="job-card" (click)="openModal(job)">
+      <div class="card-header">
+        <h3>{{ job.title }}</h3>
+        <span class="badge status-{{ job.status | lowercase }}">{{ job.status
+          }}</span>
+      </div>
+
+      <p class="company"><strong>{{ job.company }}</strong> • {{ job.location
+        }}</p>
+
+      <div class="tags">
+        <span class="tag tag-modality">{{ job.modality }}</span>
+        <span class="tag tag-seniority">{{ job.seniority }}</span>
+      </div>
+
+      <p class="description">{{ job.description | slice:0:100 }}...</p>
+
+      <div class="card-footer">
+        <span class="salary">${{ job.salaryRange }} USD</span>
+
+        @if (myApplications().includes(job.idVacancy)) {
+        <button class="btn-applied" (click)="$event.stopPropagation()"
+          disabled>Ya aplicaste a esta
+          vacante</button>
+        }
+        @else if (job.canApply) {
+        <button
+          class="btn-apply"
+          [disabled]="applyingId() === job.idVacancy"
+          (click)="applyToVacancy(job.idVacancy); $event.stopPropagation()">
+          {{ applyingId() === job.idVacancy ? 'Enviando...' : 'Aplicar' }} ({{
+          job.remainingSlots }} cupos)
+        </button>
+        }
+        @else {
+        <button class="btn-disabled" (click)="$event.stopPropagation()"
+          disabled>Cerrada</button>
+        }
+      </div>
+    </div>
+    } @empty {
+    <p class="no-data">No hay vacantes disponibles en este momento.</p>
+    }
+  </div>
+
+  @if (allVacancies().length > itemsPerPage) {
+  <div class="pagination">
+    <button (click)="prevPage()"
+      [disabled]="currentPage() === 1">Anterior</button>
+    <span>Página {{ currentPage() }} de {{ totalPages() }}</span>
+    <button (click)="nextPage()"
+      [disabled]="currentPage() === totalPages()">Siguiente</button>
+  </div>
+  }
+  }
+</div>
+
+@if (isModalOpen()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      
+      <h2>{{ selectedVacancy()?.title }}</h2>
+
+      <p><strong>Empresa:</strong> {{ selectedVacancy()?.company }}</p>
+      <p><strong>Ubicación:</strong> {{ selectedVacancy()?.location }}</p>
+      <p><strong>Modalidad:</strong> {{ selectedVacancy()?.modality }}</p>
+      <p><strong>Senioridad:</strong> {{ selectedVacancy()?.seniority }}</p>
+      <p><strong>Salario:</strong> ${{ selectedVacancy()?.salaryRange }}</p>
+      <p><strong>Tecnologías:</strong> {{ selectedVacancy()?.technologies }}</p>
+
+      @if (selectedVacancy()?.softSkills) {
+        <p><strong>Soft Skills:</strong> {{ selectedVacancy()?.softSkills }}</p>
+      }
+
+      <p><strong>Descripción:</strong></p>
+      <p class="description-full">{{ selectedVacancy()?.description }}</p>
+
+      <button class="btn-close" (click)="closeModal()">Cerrar</button>
+
+    </div>
+  </div>
+}

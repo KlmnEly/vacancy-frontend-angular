@@ -1,0 +1,57 @@
+<div class="applications-container">
+  <div class="header-section">
+    <h2>Mis Postulaciones</h2>
+    <p>Seguimiento de tus procesos activos.</p>
+  </div>
+
+  @if (isLoading()) {
+  <div class="loading">Cargando historial de aplicaciones...</div>
+  } @else {
+  <div class="applications-grid">
+    @for (app of myApplications(); track app.idApplication) {
+    <div class="app-card">
+      <div class="card-header">
+        <h3>{{ app.vacancyDetails?.title || 'Vacante no disponible' }}</h3>
+        <span class="badge status-sent">Postulado</span>
+      </div>
+
+      <div class="app-content">
+        <p class="company"><strong>{{ app.vacancyDetails?.company
+            }}</strong></p>
+
+        <div class="meta-info">
+          <span>📅 Aplicado el: {{ app.appliedAt | date:'dd/MM/yyyy' }}</span>
+          <span>📍 {{ app.vacancyDetails?.location }}</span>
+        </div>
+
+        @if (app.vacancyDetails) {
+        <div class="tags">
+          <span class="tag tag-modality">{{ app.vacancyDetails.modality
+            }}</span>
+        </div>
+        }
+      </div>
+
+      <div class="card-footer">
+        <span class="app-id">ID de gestión: #{{ app.idApplication }}</span>
+        <span
+        class="badge"
+        [ngClass]="{
+    'status-pending': app.status === 'PENDING',
+    'status-accepted': app.status === 'ACCEPTED',
+    'status-rejected': app.status === 'REJECTED'
+  }">
+        {{
+        app.status === 'PENDING' ? 'En espera' :
+        app.status === 'ACCEPTED' ? 'Aceptado' :
+        'Rechazado'
+        }}
+      </span>
+      </div>
+    </div>
+    } @empty {
+    <div class="no-data">No tienes postulaciones registradas.</div>
+    }
+  </div>
+  }
+</div>
