@@ -15,9 +15,19 @@ export class Layout {
 
   isSidebarOpen = signal(true);
   userRole = computed(() => this.auth.role()?.toUpperCase() ?? '');
+  userDisplayName = computed(() => {
+    const email = this.auth.email() ?? '';
+    if (!email.includes('@')) return email || 'Usuario';
+
+    return email.split('@')[0];
+  });
 
   canAccess(roles: string[]) {
     return roles.includes(this.userRole());
+  }
+
+  canSeeDashboardLink() {
+    return this.userRole() !== 'CODER';
   }
 
   toggleSidebar() {
