@@ -44,7 +44,7 @@ export class VacancyForm implements OnInit {
       seniority: ['', Validators.required],
       description: ['', Validators.required],
       technologies: ['', Validators.required],
-      salaryRange: ['', Validators.required],
+      salaryRange: [null, [Validators.required, Validators.min(1)]],
       maxApplicants: [1, [Validators.required, Validators.min(1)]],
     });
   }
@@ -74,21 +74,27 @@ export class VacancyForm implements OnInit {
     this.isSaving.set(true);
     const headers = this.getHeaders();
     const formValue = this.vacancyForm.value;
+    const salaryRange = this.toPositiveNumber(formValue.salaryRange);
+    const maxApplicants = this.toPositiveNumber(formValue.maxApplicants);
+
+    if (salaryRange === null || maxApplicants === null) {
+      alert('Salario y máximo de aplicantes deben ser números mayores que 0.');
+      this.isSaving.set(false);
+      return;
+    }
 
     const payload = {
       title: formValue.title,
       description: formValue.description,
       technologies: formValue.technologies,
       seniority: formValue.seniority,
-      softSkills: formValue.softSkills || '', 
+      softSkills: formValue.softSkills || '',
       location: formValue.location,
       modality: formValue.modality,
-      salaryRange: Number(formValue.salaryRange),
+      salaryRange,
       company: formValue.company,
-      maxApplicants: Number(formValue.maxApplicants),
+      maxApplicants,
     };
-
-    console.log('PAYLOAD FINAL:', payload);
 
     if (this.isEditMode()) {
       // 🔥 EDITAR
@@ -121,5 +127,10 @@ export class VacancyForm implements OnInit {
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+  }
+
+  private toPositiveNumber(value: unknown): number | null {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
   }
 }

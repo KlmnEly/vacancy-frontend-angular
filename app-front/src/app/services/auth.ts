@@ -7,7 +7,7 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root',
 })
 export class Auth {
-  private platformId = inject(PLATFORM_ID); 
+  private platformId = inject(PLATFORM_ID);
   private tokenPayload = signal<MyTokenPayload | null>(null);
 
   constructor() {
@@ -30,7 +30,8 @@ export class Auth {
   }
 
   userId = computed(() => this.tokenPayload()?.sub ?? null);
-  
+  email = computed(() => this.tokenPayload()?.email ?? null);
+
   isAuthenticated = computed(() => this.tokenPayload() !== null);
 
   logout() {
