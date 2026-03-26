@@ -2,7 +2,7 @@
   <h2>Crear Cuenta</h2>
   
   @if (errorMessage()) {
-    <p style="color: red;">{{ errorMessage() }}</p>
+    <p class="error-message">{{ errorMessage() }}</p>
   }
 
   <form #regForm="ngForm" (ngSubmit)="onRegister(regForm.value)">
@@ -13,5 +13,5 @@
     <button type="submit" [disabled]="!regForm.valid">Registrarme</button>
   </form>
 
-  <p>¿Ya tienes cuenta? <button (click)="goToLogin()">Volver al Login</button></p>
+  <p>¿Ya tienes cuenta? <button type="button" class="link-button" (click)="goToLogin()">Volver al Login</button></p>
 </div>

@@ -1,57 +1,107 @@
 <div class="applications-container">
   <div class="header-section">
-    <h2>Mis Postulaciones</h2>
-    <p>Seguimiento de tus procesos activos.</p>
+    <h2>{{ isReviewer() ? 'Gestión de Postulaciones' : 'Mis Postulaciones' }}</h2>
+    <p>
+      {{
+        isReviewer()
+          ? 'Revisa candidatos y actualiza el estado de cada proceso.'
+          : 'Seguimiento de tus procesos activos.'
+      }}
+    </p>
   </div>
 
   @if (isLoading()) {
-  <div class="loading">Cargando historial de aplicaciones...</div>
-  } @else {
-  <div class="applications-grid">
-    @for (app of myApplications(); track app.idApplication) {
-    <div class="app-card">
-      <div class="card-header">
-        <h3>{{ app.vacancyDetails?.title || 'Vacante no disponible' }}</h3>
-        <span class="badge status-sent">Postulado</span>
-      </div>
-
-      <div class="app-content">
-        <p class="company"><strong>{{ app.vacancyDetails?.company
-            }}</strong></p>
-
-        <div class="meta-info">
-          <span>📅 Aplicado el: {{ app.appliedAt | date:'dd/MM/yyyy' }}</span>
-          <span>📍 {{ app.vacancyDetails?.location }}</span>
-        </div>
-
-        @if (app.vacancyDetails) {
-        <div class="tags">
-          <span class="tag tag-modality">{{ app.vacancyDetails.modality
-            }}</span>
-        </div>
-        }
-      </div>
-
-      <div class="card-footer">
-        <span class="app-id">ID de gestión: #{{ app.idApplication }}</span>
-        <span
-        class="badge"
-        [ngClass]="{
-    'status-pending': app.status === 'PENDING',
-    'status-accepted': app.status === 'ACCEPTED',
-    'status-rejected': app.status === 'REJECTED'
-  }">
-        {{
-        app.status === 'PENDING' ? 'En espera' :
-        app.status === 'ACCEPTED' ? 'Aceptado' :
-        'Rechazado'
-        }}
-      </span>
-      </div>
+    <div class="loading">
+      {{
+        isReviewer()
+          ? 'Cargando postulaciones del sistema...'
+          : 'Cargando historial de aplicaciones...'
+      }}
     </div>
-    } @empty {
-    <div class="no-data">No tienes postulaciones registradas.</div>
-    }
-  </div>
+  } @else {
+    <div class="applications-grid">
+      @for (app of myApplications(); track app.idApplication) {
+        <div class="app-card">
+          <div class="card-header">
+            <h3>{{ app.vacancyDetails?.title || 'Vacante no disponible' }}</h3>
+            <span class="badge status-sent">Postulación</span>
+          </div>
+
+          <div class="app-content">
+            <p class="company">
+              <strong>{{ app.vacancyDetails?.company }}</strong>
+            </p>
+
+            @if (isReviewer()) {
+              <p class="candidate-data">
+                <strong>Candidato:</strong>
+                {{ app.userEmail || 'Usuario #' + (app.userId || 'N/A') }}
+              </p>
+            }
+
+            <div class="meta-info">
+              <span>📅 Aplicado el: {{ app.appliedAt | date: 'dd/MM/yyyy' }}</span>
+              <span>📍 {{ app.vacancyDetails?.location }}</span>
+            </div>
+
+            @if (app.vacancyDetails) {
+              <div class="tags">
+                <span class="tag tag-modality">{{ app.vacancyDetails.modality }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="card-footer">
+            <span class="app-id">ID de gestión: #{{ app.idApplication }}</span>
+            <span
+              class="badge"
+              [ngClass]="{
+                'status-pending': app.status === applicationStatus.PENDING,
+                'status-accepted': app.status === applicationStatus.ACCEPTED,
+                'status-rejected': app.status === applicationStatus.REJECTED,
+              }"
+            >
+              {{ statusLabel(app.status) }}
+            </span>
+
+            @if (isReviewer()) {
+              <div class="review-actions">
+                <button
+                  class="btn-status btn-pending"
+                  [disabled]="updatingId() === app.idApplication || app.status === applicationStatus.PENDING"
+                  (click)="updateStatus(app.idApplication, applicationStatus.PENDING)"
+                >
+                  {{ updatingId() === app.idApplication ? 'Guardando...' : 'Pendiente' }}
+                </button>
+
+                <button
+                  class="btn-status btn-approve"
+                  [disabled]="updatingId() === app.idApplication || app.status === applicationStatus.ACCEPTED"
+                  (click)="updateStatus(app.idApplication, applicationStatus.ACCEPTED)"
+                >
+                  {{ updatingId() === app.idApplication ? 'Guardando...' : 'Aprobar' }}
+                </button>
+
+                <button
+                  class="btn-status btn-reject"
+                  [disabled]="updatingId() === app.idApplication || app.status === applicationStatus.REJECTED"
+                  (click)="updateStatus(app.idApplication, applicationStatus.REJECTED)"
+                >
+                  {{ updatingId() === app.idApplication ? 'Guardando...' : 'Rechazar' }}
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div class="no-data">
+          {{
+            isReviewer()
+              ? 'No hay postulaciones registradas.'
+              : 'No tienes postulaciones registradas.'
+          }}
+        </div>
+      }
+    </div>
   }
 </div>

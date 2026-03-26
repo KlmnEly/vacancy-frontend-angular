@@ -21,6 +21,7 @@ export class Vacancies implements OnInit {
   isLoading = signal<boolean>(true);
   myApplications = signal<number[]>([]);
   applyingId = signal<number | null>(null);
+  isCoder = computed(() => (this.auth.role() ?? '').toUpperCase() === 'CODER');
 
   paginatedVacancies = computed(() => {
     const start = (this.currentPage() - 1) * this.itemsPerPage;
@@ -34,7 +35,10 @@ export class Vacancies implements OnInit {
 
   ngOnInit() {
     this.fetchVacancies();
-    this.loadMyApplications();
+
+    if (this.isCoder()) {
+      this.loadMyApplications();
+    }
   }
 
   fetchVacancies() {
@@ -65,27 +69,38 @@ export class Vacancies implements OnInit {
 
   loadMyApplications() {
     const userId = this.auth.userId();
+    const userEmail = this.auth.email();
     if (!userId) return;
+    if (!userEmail) return;
 
     const headers = this.getHeaders();
-    // Asumiendo que tu API tiene un endpoint para ver aplicaciones por usuario
-    // Si no lo tiene, puedes filtrar el GET /applications general en el front
-    this.http.get<any>('http://localhost:3000/applications/my-history', { headers }).subscribe({
-      next: (res) => {
-        if (res && res.success && Array.isArray(res.data)) {
-          const appliedIds = res.data
-            .filter((app: any) => Number(app.userId) === Number(userId))
-            .map((app: any) => Number(app.vacancyId));
+    this.http
+      .get<any>(`http://localhost:3000/applications/user/${encodeURIComponent(userEmail)}`, {
+        headers,
+      })
+      .subscribe({
+        next: (res) => {
+          const records = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
 
-          this.myApplications.set(appliedIds);
-          console.log('Aplicaciones del usuario cargadas:', this.myApplications());
-        }
-      },
-      error: (err) => console.error('Error cargando aplicaciones previas', err),
-    });
+          if (Array.isArray(records)) {
+            const appliedIds = records
+              .map((app: any) => Number(app.vacancyId ?? app.idVacancy ?? app.id ?? 0))
+              .filter((id: number) => id > 0);
+
+            this.myApplications.set(appliedIds);
+            console.log('Aplicaciones del usuario cargadas:', this.myApplications());
+          }
+        },
+        error: (err) => console.error('Error cargando aplicaciones previas', err),
+      });
   }
 
   applyToVacancy(vacancyId: number) {
+    if (!this.isCoder()) {
+      alert('Solo los usuarios con rol CODER pueden postularse a vacantes.');
+      return;
+    }
+
     const userId = this.auth.userId();
 
     if (!userId) {

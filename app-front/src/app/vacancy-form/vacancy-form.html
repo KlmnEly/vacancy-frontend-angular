@@ -28,7 +28,13 @@
 
     <textarea placeholder="Descripción" formControlName="description"></textarea>
 
-    <input type="text" placeholder="Salario (USD)" formControlName="salaryRange" />
+    <input
+      type="number"
+      min="1"
+      step="1"
+      placeholder="Salario (USD)"
+      formControlName="salaryRange"
+    />
 
     <input type="number" placeholder="Máx. aplicantes" formControlName="maxApplicants" />
 

@@ -7,7 +7,7 @@ export interface Vacancy {
   softSkills: string;
   location: string;
   modality: string;
-  salaryRange: string;
+  salaryRange: number;
   company: string;
   maxApplicants: number;
   status: string;

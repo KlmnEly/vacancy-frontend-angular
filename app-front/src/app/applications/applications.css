@@ -1,69 +1,174 @@
+.applications-container {
+  padding: 1.25rem;
+  background: linear-gradient(160deg, #f8fafc 0%, #eef6ff 100%);
+  min-height: calc(100vh - 120px);
+}
+
+.header-section h2 {
+  margin: 0;
+  color: #0f2744;
+}
+
+.header-section p {
+  margin-top: 0.4rem;
+  color: #49617f;
+}
+
+.applications-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
 .app-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #eee;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  border: 1px solid #dbe8f6;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 24px rgba(15, 39, 68, 0.08);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #17385f;
 }
 
 .company {
-  color: #666;
-  margin-bottom: 10px;
+  color: #415a77;
+  margin: 0.85rem 0 0.5rem;
+}
+
+.candidate-data {
+  margin: 0 0 0.6rem;
+  color: #29486d;
+  font-size: 0.9rem;
 }
 
 .meta-info {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 0.35rem;
   font-size: 0.85rem;
-  color: #888;
-  margin-bottom: 15px;
+  color: #61758f;
+  margin-bottom: 0.9rem;
+}
+
+.tag-modality {
+  background-color: #e8f3ff;
+  color: #1e5fa5;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 .card-footer {
   margin-top: auto;
   padding-top: 10px;
-  border-top: 1px solid #f5f5f5;
+  border-top: 1px solid #edf3fa;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-id {
+  color: #6c809b;
   font-size: 0.75rem;
-  color: #bbb;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .status-sent {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.tag-modality { 
-  background-color: #e1f0ff; 
-  color: #007bff; 
-  padding: 4px 8px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  background-color: #e4f1ff;
+  color: #175ca8;
 }
 
 .status-pending {
-  background-color: #facc15; /* amarillo */
-  color: #000;
-  padding: 2px;
-  border-radius: 4px;
-}
-
-.status-pending::after,
-.status-accepted::after,
-.status-rejected::after {
-  content: '';
-  margin-left: 5px;
+  background-color: #fde68a;
+  color: #7c4a03;
 }
 
 .status-accepted {
-  background-color: #22c55e; /* verde */
-  color: white;
+  background-color: #bbf7d0;
+  color: #166534;
 }
 
 .status-rejected {
-  background-color: #ef4444; /* rojo */
-  color: white;
+  background-color: #fecaca;
+  color: #991b1b;
+}
+
+.review-actions {
+  display: flex;
+  gap: 0.45rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-status {
+  border: none;
+  border-radius: 10px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    filter 0.2s ease;
+  flex: 1;
+}
+
+.btn-status:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+
+.btn-status:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
+.btn-approve {
+  background: #15803d;
+  color: #fff;
+}
+
+.btn-pending {
+  background: #b45309;
+  color: #fff;
+}
+
+.btn-reject {
+  background: #b91c1c;
+  color: #fff;
+}
+
+.loading,
+.no-data {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #fff;
+  color: #49617f;
+  border: 1px dashed #cbdced;
+  text-align: center;
 }

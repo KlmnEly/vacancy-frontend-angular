@@ -35,6 +35,10 @@
           disabled>Ya aplicaste a esta
           vacante</button>
         }
+        @else if (!isCoder()) {
+        <button class="btn-disabled" (click)="$event.stopPropagation()"
+          disabled>Solo CODER puede postularse</button>
+        }
         @else if (job.canApply) {
         <button
           class="btn-apply"

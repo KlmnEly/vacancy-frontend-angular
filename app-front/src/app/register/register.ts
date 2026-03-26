@@ -11,6 +11,12 @@ import { Router } from '@angular/router';
 })
 export class Register {
   readonly API_URL = 'http://localhost:3000';
+  private readonly registerPaths = [
+    '/users',
+    '/auth/register',
+    '/api/v1/users',
+    '/api/v1/auth/register',
+  ];
   private http = inject(HttpClient);
   private router = inject(Router);
 
@@ -18,18 +24,35 @@ export class Register {
 
   onRegister(formData: any) {
     console.log('Form Data:', formData);
+    this.errorMessage.set(null);
+    this.registerWithFallback(formData, 0);
+  }
 
-    this.http.post(`${this.API_URL}/auth/register`, formData).subscribe({
+  private registerWithFallback(formData: any, index: number) {
+    if (index >= this.registerPaths.length) {
+      this.errorMessage.set('No se encontró endpoint de registro disponible en el backend.');
+      return;
+    }
+
+    const endpoint = `${this.API_URL}${this.registerPaths[index]}`;
+
+    this.http.post(endpoint, formData).subscribe({
       next: (response) => {
-        console.log('Registration successful:', response);
+        console.log(`Registration successful on ${endpoint}:`, response);
         this.router.navigate(['/login']);
       },
-      error: (error) => {
-        console.error('Registration failed:', error);
-        this.errorMessage.set('Error al registrar el usuario.');
-      }
-    });
+      error: (error: any) => {
+        const status = Number(error?.status ?? 0);
 
+        if (status === 404) {
+          this.registerWithFallback(formData, index + 1);
+          return;
+        }
+
+        console.error('Registration failed:', error);
+        this.errorMessage.set(error?.error?.message || 'Error al registrar el usuario.');
+      },
+    });
   }
 
   goToLogin() {
