@@ -1,0 +1,107 @@
+<div class="layout-wrapper">
+
+    <header class="top-header">
+        <div class="logo">Vacancy App</div>
+        <div class="header-actions">
+            <span class="user-name">{{ userDisplayName() }}</span>
+            <button (click)="logout()" class="btn-logout">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="logout-icon">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Salir</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <aside class="sidebar" [class.closed]="!isSidebarOpen()">
+            <button class="toggle-btn" (click)="toggleSidebar()">
+                @if (isSidebarOpen()) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="icon icon-tabler arrow-badge-left">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M11 17h6l-4 -5l4 -5h-6l-4 5l4 5" />
+                </svg> <span>Cerrar</span>
+                } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="icon icon-tabler arrow-badge-right">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M13 7h-6l4 5-4 5h6l4 -5-4 -5" />
+                </svg>
+                }
+            </button>
+
+            <nav class="nav-links">
+                @if (canSeeDashboardLink()) {
+                <a routerLink="/app/dashboard" routerLinkActive="active"
+                    title="dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                        height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-category-2"><path
+                            stroke="none" d="M0 0h24v24H0z" fill="none" /><path
+                            d="M14 4h6v6h-6l0 -6" /><path
+                            d="M4 14h6v6h-6l0 -6" /><path
+                            d="M14 17a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path
+                            d="M4 7a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /></svg>
+                    @if (isSidebarOpen()) {
+                    <span class="link-text">Dashboard</span>
+                    }
+                </a>
+                }
+                <a routerLink="/app/vacancies" routerLinkActive="active" title="Vacantes">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                        height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-article"><path
+                            stroke="none" d="M0 0h24v24H0z" fill="none" /><path
+                            d="M3 6a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -12" /><path
+                            d="M7 8h10" /><path d="M7 12h10" /><path
+                            d="M7 16h10" /></svg>
+                    @if (isSidebarOpen()) {
+                    <span class="link-text">Vacantes</span>
+                    }
+                </a>
+                @if (canAccess(['GESTOR', 'ADMIN'])) {
+                <a routerLink="/app/vacancies-gestor" routerLinkActive="active" title="Gestor de Vacantes">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-briefcase"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-16a1 1 0 0 0 -1 1z" /><path d="M8 5a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v5h-8v-5z" /></svg>
+                    @if (isSidebarOpen()) {
+                    <span class="link-text">Gestor de Vacantes</span>
+                    }
+                </a>
+                }
+                <a routerLink="/app/applications" routerLinkActive="active" title="Aplicaciones">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-list-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3.5 5.5l1.5 1.5l2.5 -2.5" /><path d="M3.5 11.5l1.5 1.5l2.5 -2.5" /><path d="M3.5 17.5l1.5 1.5l2.5 -2.5" /><path d="M11 6l9 0" /><path d="M11 12l9 0" /><path d="M11 18l9 0" /></svg>
+                    @if (isSidebarOpen()) {
+                    <span class="link-text">Aplicaciones</span>
+                    }
+                </a>
+                <a routerLink="/app/edit-profile" routerLinkActive="active" title="Editar Perfil">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h3.5" /><path d="M18.42 15.61a2.1 2.1 0 0 1 2.97 2.97l-3.39 3.42h-3v-3l3.42 -3.39" /></svg>
+                    @if (isSidebarOpen()) {
+                    <span class="link-text">Editar Perfil</span>
+                    }
+                </a>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <router-outlet></router-outlet>
+        </main>
+
+    </div>
+</div>

@@ -1,0 +1,108 @@
+<div class="vacancies-container">
+  <div class="header-section gestor-header">
+    <div>
+      <h2>Panel de Gestión de Vacantes</h2>
+      <p>Administra, edita y publica nuevas ofertas laborales.</p>
+    </div>
+    <button class="btn-create" (click)="createVacancy()">
+      <span>+</span> Publicar Nueva Vacante
+    </button>
+  </div>
+
+  <hr class="separator" />
+
+  @if (isLoading()) {
+    <div class="loading">Cargando tus vacantes...</div>
+  } @else {
+    <div class="vacancies-grid">
+      @for (job of paginatedVacancies(); track job.idVacancy) {
+        <div class="job-card" (click)="openModal(job)">
+          <div class="card-header">
+            <h3>{{ job.title }}</h3>
+            <span
+              class="badge"
+              [ngClass]="{
+                'status-active': job.isActive,
+                'status-inactive': !job.isActive,
+              }"
+            >
+              {{ job.isActive ? 'Activa' : 'Eliminada' }}
+            </span>
+          </div>
+
+          <p class="company">
+            <strong>{{ job.company }}</strong> • {{ job.location }}
+          </p>
+
+          <div class="tags">
+            <span class="tag tag-modality">{{ job.modality }}</span>
+            <span class="tag tag-seniority">{{ job.seniority }}</span>
+            <span class="tag tag-applicants">👥 {{ job.maxApplicants }} max.</span>
+          </div>
+
+          <p class="description">{{ job.description | slice: 0 : 100 }}...</p>
+
+          <div class="card-footer gestor-actions">
+            <span class="salary">${{ job.salaryRange }} USD</span>
+
+            <div class="button-group">
+              <button class="btn-edit" (click)="editVacancy(job.idVacancy); $event.stopPropagation()">Editar</button>
+              <button
+                class="btn-delete"
+                [disabled]="deletingId() === job.idVacancy"
+                (click)="deleteVacancy(job); $event.stopPropagation()"
+              >
+                {{
+                  deletingId() === job.idVacancy
+                    ? 'Procesando...'
+                    : job.isActive
+                      ? 'Eliminar'
+                      : 'Restaurar'
+                }}
+              </button>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="no-data">
+          <p>No has publicado ninguna vacante todavía.</p>
+        </div>
+      }
+    </div>
+
+    @if (allVacancies().length > itemsPerPage) {
+      <div class="pagination">
+        <button (click)="prevPage()" [disabled]="currentPage() === 1">Anterior</button>
+        <span>Página {{ currentPage() }} de {{ totalPages() }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage() === totalPages()">Siguiente</button>
+      </div>
+    }
+  }
+</div>
+
+@if (isModalOpen()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      
+      <h2>{{ selectedVacancy()?.title }}</h2>
+
+      <p><strong>Empresa:</strong> {{ selectedVacancy()?.company }}</p>
+      <p><strong>Ubicación:</strong> {{ selectedVacancy()?.location }}</p>
+      <p><strong>Modalidad:</strong> {{ selectedVacancy()?.modality }}</p>
+      <p><strong>Senioridad:</strong> {{ selectedVacancy()?.seniority }}</p>
+      <p><strong>Salario:</strong> ${{ selectedVacancy()?.salaryRange }}</p>
+      <p><strong>Tecnologías:</strong> {{ selectedVacancy()?.technologies }}</p>
+
+      @if (selectedVacancy()?.softSkills) {
+        <p><strong>Soft Skills:</strong> {{ selectedVacancy()?.softSkills }}</p>
+      }
+
+      <p><strong>Descripción:</strong></p>
+      <p class="description-full">{{ selectedVacancy()?.description }}</p>
+
+      <button class="btn-close" (click)="closeModal()">Cerrar</button>
+
+    </div>
+  </div>
+}

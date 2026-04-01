@@ -1,0 +1,57 @@
+.dashboard {
+  padding: 0.5rem;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  color: #1f3d5a;
+}
+
+.dashboard-header p {
+  margin-top: 0.4rem;
+  color: #4c5f73;
+}
+
+.shortcut-grid {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.shortcut-card {
+  border: 1px solid #dbe5ee;
+  border-radius: 14px;
+  padding: 1rem;
+  text-decoration: none;
+  background: linear-gradient(160deg, #ffffff, #f6f9fc);
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shortcut-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(31, 61, 90, 0.08);
+}
+
+.shortcut-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8eef5;
+  color: #1f3d5a;
+}
+
+.shortcut-card h3 {
+  margin: 0.8rem 0 0.3rem;
+  color: #1f3d5a;
+}
+
+.shortcut-card p {
+  margin: 0;
+  color: #596b7b;
+  font-size: 0.92rem;
+}

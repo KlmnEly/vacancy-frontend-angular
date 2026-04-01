@@ -1,0 +1,47 @@
+<div class="form-container">
+  <h2>
+    {{ isEditMode() ? 'Editar Vacante' : 'Crear Vacante' }}
+  </h2>
+
+  @if (isLoading()) {
+    <p>Cargando...</p>
+  } @else {
+
+  <form [formGroup]="vacancyForm" (ngSubmit)="submit()" class="form">
+
+    <input type="text" placeholder="Título" formControlName="title" />
+    <input type="text" placeholder="Empresa" formControlName="company" />
+    <input type="text" placeholder="Ubicación" formControlName="location" />
+<input type="text" placeholder="Tecnologías" formControlName="technologies" />
+    <select formControlName="modality">
+  <option value="REMOTO">Remoto</option>
+  <option value="PRESENCIAL">Presencial</option>
+  <option value="HIBRIDO">Híbrido</option>
+</select>
+
+    <select formControlName="seniority">
+      <option value="">Senioridad</option>
+      <option value="Junior">Junior</option>
+      <option value="Mid">Mid</option>
+      <option value="Senior">Senior</option>
+    </select>
+
+    <textarea placeholder="Descripción" formControlName="description"></textarea>
+
+    <input
+      type="number"
+      min="1"
+      step="1"
+      placeholder="Salario (USD)"
+      formControlName="salaryRange"
+    />
+
+    <input type="number" placeholder="Máx. aplicantes" formControlName="maxApplicants" />
+
+    <button type="submit" [disabled]="isSaving()">
+      {{ isSaving() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Crear') }}
+    </button>
+
+  </form>
+  }
+</div>
